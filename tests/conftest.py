@@ -28,13 +28,69 @@ options.binary_location = firefox_path
 service = Service(executable_path=geckodriver_path)
 
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "--rm",
+        action="store_true",
+        default=False,
+        help="Delete a created contact after test",
+    )
+
+
 @pytest.fixture
-def browser():
+def browser(pytestconfig):
     logger.info("Prepare browser.")
     browser = webdriver.Firefox(service=service, options=options)
     yield browser
+    # if pytestconfig.getoption("--rm"):
+    #     logger.info("Delete all contacts.")
+    #
+    #     link = base_url + "contactList"
+    #     contact_list_page = ContactListPage(browser=browser, url=link)
+    #     contact_list_page.open()
+    #
+    #     rows = contact_list_page.get_list_of_all_contacts()
+    #
+    #     for row in rows:
+    #         WebDriverWait(browser, 5).until(EC.element_to_be_clickable(row))
+    #         row.click()
+    #         contact_details_page = ContactDetailsPage(
+    #             browser=browser, url=browser.current_url
+    #         )
+    #
+    #         contact_list_page.open()
+    #         WebDriverWait(browser, 10).until(EC.url_to_be(base_url + "contactDetails"))
+    #         contact_details_page.delete_contact()
+
     logger.info("Browser quit.")
     browser.quit()
+
+
+@pytest.fixture(autouse=True)
+def del_all_contacts(browser: webdriver.Firefox, pytestconfig):
+    yield
+    if pytestconfig.getoption("--rm"):
+        logger.info("Delete all contacts.")
+        link = base_url + "contactList"
+        contact_list_page = ContactListPage(browser=browser, url=link)
+        contact_list_page.open()
+
+        while True:
+            first_contact = contact_list_page.get_first_contact()
+
+            if first_contact:
+                WebDriverWait(browser, 5).until(
+                    EC.element_to_be_clickable(first_contact)
+                )
+                first_contact.click()
+                contact_details_page = ContactDetailsPage(
+                    browser=browser, url=browser.current_url
+                )
+                contact_details_page.delete_contact()
+                WebDriverWait(browser, 5).until(EC.staleness_of(first_contact))
+                contact_list_page.open()
+            else:
+                break
 
 
 @pytest.fixture(scope="function")
@@ -110,7 +166,3 @@ def created_contact(
     contact_details_page = ContactDetailsPage(browser=browser, url=browser.current_url)
 
     return contact_details_page, create_contact_info
-
-
-def pytest_sessionfinish(session, exitstatus):
-    logger.info(f"Tests finish with status {exitstatus}")

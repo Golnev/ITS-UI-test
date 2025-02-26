@@ -1,4 +1,5 @@
 import logging as logger
+import time
 from typing import Literal
 
 from selenium.webdriver.common.keys import Keys
@@ -78,6 +79,7 @@ class EditContactPage(BasePage):
 
         edit_field = self.browser.find_element(*locators_dict[what])
 
+        time.sleep(1)
         edit_field.send_keys(Keys.CONTROL + "a")
         edit_field.send_keys(Keys.DELETE)
         WebDriverWait(self.browser, 2).until(

@@ -35,6 +35,7 @@ class ContactListPageLocators:
     CONTACT_LIST_TABLE = (By.CSS_SELECTOR, ".contactTable")
     LOGOUT_BUTTON = (By.CSS_SELECTOR, "#logout")
     FULL_NAME_CONTACTS = (By.XPATH, "//table[@id='myTable']/tr/td[2]")
+    FIRST_CONTACT = (By.XPATH, "//table[@id='myTable']/tr[1]/td[2]")
 
 
 @dataclass

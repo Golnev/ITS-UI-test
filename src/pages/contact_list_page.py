@@ -80,3 +80,15 @@ class ContactListPage(BasePage):
             By.XPATH, f"//table//td[contains(text(), '{full_name}')]"
         )
         contact.click()
+
+    def get_first_contact(self):
+        logger.info("Get first contact from list.")
+
+        if self.is_element_present(*ContactListPageLocators.FIRST_CONTACT):
+            first_contact = self.browser.find_element(
+                *ContactListPageLocators.FIRST_CONTACT
+            )
+            return first_contact
+
+        logger.info("No contacts.")
+        return

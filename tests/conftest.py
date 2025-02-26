@@ -42,25 +42,6 @@ def browser(pytestconfig):
     logger.info("Prepare browser.")
     browser = webdriver.Firefox(service=service, options=options)
     yield browser
-    # if pytestconfig.getoption("--rm"):
-    #     logger.info("Delete all contacts.")
-    #
-    #     link = base_url + "contactList"
-    #     contact_list_page = ContactListPage(browser=browser, url=link)
-    #     contact_list_page.open()
-    #
-    #     rows = contact_list_page.get_list_of_all_contacts()
-    #
-    #     for row in rows:
-    #         WebDriverWait(browser, 5).until(EC.element_to_be_clickable(row))
-    #         row.click()
-    #         contact_details_page = ContactDetailsPage(
-    #             browser=browser, url=browser.current_url
-    #         )
-    #
-    #         contact_list_page.open()
-    #         WebDriverWait(browser, 10).until(EC.url_to_be(base_url + "contactDetails"))
-    #         contact_details_page.delete_contact()
 
     logger.info("Browser quit.")
     browser.quit()

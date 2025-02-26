@@ -19,14 +19,16 @@ load_dotenv()
 class TestLoginPage:
     logger.info("Starting tests for Login Page")
 
-    def test_user_should_be_in_login_page(self, browser: webdriver.Firefox):
+    def test_user_should_be_in_login_page(
+        self, browser: webdriver.Firefox | webdriver.Chrome
+    ):
         logger.info("Starting Test: user should be in login page")
         link = base_url + "login"
         page = LoginPage(browser=browser, url=link)
         page.open()
         page.should_be_login_page()
 
-    def test_login(self, browser: webdriver.Firefox, setup_user):
+    def test_login(self, browser: webdriver.Firefox | webdriver.Chrome, setup_user):
         logger.info("Starting Test: login")
         link = base_url + "login"
         page = LoginPage(browser=browser, url=link)
@@ -43,7 +45,9 @@ class TestLoginPage:
             page.browser.current_url == base_url + "contactList"
         ), f"Wrong URL after login. URL: {page.browser.current_url}"
 
-    def test_user_can_go_to_register_page(self, browser: webdriver.Firefox):
+    def test_user_can_go_to_register_page(
+        self, browser: webdriver.Firefox | webdriver.Chrome
+    ):
         logger.info("Starting Test: go to register page.")
         link = base_url + "login"
         page = LoginPage(browser=browser, url=link)

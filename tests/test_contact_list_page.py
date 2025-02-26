@@ -16,7 +16,7 @@ class TestContactListPage:
     logger.info("Starting tests for contact list page.")
 
     def test_user_should_be_in_contact_list_page(
-        self, browser: webdriver.Firefox, setup_user
+        self, browser: webdriver.Firefox | webdriver.Chrome, setup_user
     ):
         logger.info("Starting Test: user should be in contact list page.")
 
@@ -25,7 +25,7 @@ class TestContactListPage:
         page.open()
         page.should_be_contact_list_page()
 
-    def test_logout(self, browser: webdriver.Firefox, setup_user):
+    def test_logout(self, browser: webdriver.Firefox | webdriver.Chrome, setup_user):
         logger.info("Starting Test: logout.")
 
         link = base_url + "contactList"
@@ -40,7 +40,7 @@ class TestContactListPage:
         ), f"Wrong URL after logout. URL: {page.browser.current_url}"
 
     def test_user_can_go_to_add_new_contact(
-        self, browser: webdriver.Firefox, setup_user
+        self, browser: webdriver.Firefox | webdriver.Chrome, setup_user
     ):
         logger.info("Starting Test: user can go to add new contact.")
 
@@ -55,7 +55,10 @@ class TestContactListPage:
         add_new_contact_page.should_be_add_new_contact_page()
 
     def test_user_can_go_to_contact_details(
-        self, browser: webdriver.Firefox, setup_user, create_contact_info
+        self,
+        browser: webdriver.Firefox | webdriver.Chrome,
+        setup_user,
+        create_contact_info,
     ):
         logger.info("Starting Test: user can go to contact details.")
         add_new_contact_link = base_url + "addContact"

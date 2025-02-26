@@ -15,14 +15,16 @@ from src.pages.register_page import RegisterPage
 class TestRegisterPage:
     logger.info("Starting tests for register page.")
 
-    def test_user_should_be_in_register_page(self, browser: webdriver.Firefox):
+    def test_user_should_be_in_register_page(
+        self, browser: webdriver.Firefox | webdriver.Chrome
+    ):
         logger.info("Starting Test: user should be in register page")
         link = base_url + "addUser"
         page = RegisterPage(browser=browser, url=link)
         page.open()
         page.should_be_register_page()
 
-    def test_register_new_user(self, browser: webdriver.Firefox):
+    def test_register_new_user(self, browser: webdriver.Firefox | webdriver.Chrome):
         logger.info("Starting Test: register new user.")
         link = base_url + "addUser"
         page = RegisterPage(browser=browser, url=link)
@@ -52,7 +54,9 @@ class TestRegisterPage:
         ), f"Wrong URL after register. URL: {page.browser.current_url}"
 
     @pytest.mark.negative
-    def test_register_new_user_with_short_password(self, browser: webdriver.Firefox):
+    def test_register_new_user_with_short_password(
+        self, browser: webdriver.Firefox | webdriver.Chrome
+    ):
         logger.info("Starting Test: register new user.")
         link = base_url + "addUser"
         page = RegisterPage(browser=browser, url=link)
@@ -77,7 +81,9 @@ class TestRegisterPage:
 
         page.should_be_validation_error()
 
-    def test_cancel_from_register_page(self, browser: webdriver.Firefox):
+    def test_cancel_from_register_page(
+        self, browser: webdriver.Firefox | webdriver.Chrome
+    ):
         logger.info("Starting Test: cancel from register page.")
         link = base_url + "addUser"
         page = RegisterPage(browser=browser, url=link)

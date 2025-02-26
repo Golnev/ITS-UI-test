@@ -5,8 +5,8 @@ import pytest
 from dotenv import load_dotenv
 from faker import Faker
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.firefox.service import Service
+
+
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -21,11 +21,8 @@ load_dotenv()
 firefox_path = os.getenv("FIREFOX_PATH")
 geckodriver_path = os.getenv("GECKODRIVER_PATH")
 
-
-options = Options()
-options.binary_location = firefox_path
-
-service = Service(executable_path=geckodriver_path)
+google_chrome_path = os.getenv("GOOGLE_CHROME_PATH")
+chromedriver_path = os.getenv("CHROMEDRIVER_PATH")
 
 
 def pytest_addoption(parser):
@@ -35,12 +32,42 @@ def pytest_addoption(parser):
         default=False,
         help="Delete a created contact after test",
     )
+    parser.addoption(
+        "--browser_name",
+        action="store",
+        default="firefox",
+        help="Choose browser: chrome or firefox",
+    )
 
 
 @pytest.fixture
 def browser(pytestconfig):
-    logger.info("Prepare browser.")
-    browser = webdriver.Firefox(service=service, options=options)
+    browser_name = pytestconfig.getoption("--browser_name")
+    browser = None
+
+    if browser_name == "firefox":
+        logger.info("Prepare browser firefox.")
+
+        from selenium.webdriver.firefox.options import Options
+        from selenium.webdriver.firefox.service import Service
+
+        options = Options()
+        options.binary_location = firefox_path
+
+        service = Service(executable_path=geckodriver_path)
+        browser = webdriver.Firefox(service=service, options=options)
+    elif browser_name == "chrome":
+        logger.info("Prepare browser chrome.")
+
+        from selenium.webdriver.chrome.options import Options
+        from selenium.webdriver.chrome.service import Service
+
+        options = Options()
+        options.binary_location = google_chrome_path
+
+        service = Service(executable_path=chromedriver_path)
+        browser = webdriver.Firefox(service=service, options=options)
+
     yield browser
 
     logger.info("Browser quit.")
@@ -48,7 +75,7 @@ def browser(pytestconfig):
 
 
 @pytest.fixture(autouse=True)
-def del_all_contacts(browser: webdriver.Firefox, pytestconfig):
+def del_all_contacts(browser: webdriver.Firefox | webdriver.Chrome, pytestconfig):
     yield
     if pytestconfig.getoption("--rm"):
         logger.info("Delete all contacts.")
@@ -75,7 +102,7 @@ def del_all_contacts(browser: webdriver.Firefox, pytestconfig):
 
 
 @pytest.fixture(scope="function")
-def setup_user(browser: webdriver.Firefox):
+def setup_user(browser: webdriver.Firefox | webdriver.Chrome):
     logger.info("Setup user with default parameters.")
     link = base_url + "login"
     page = LoginPage(browser=browser, url=link)
@@ -88,7 +115,7 @@ def setup_user(browser: webdriver.Firefox):
 
 
 @pytest.fixture(scope="function")
-def create_contact_info(browser: webdriver.Firefox, setup_user):
+def create_contact_info(browser: webdriver.Firefox | webdriver.Chrome, setup_user):
     logger.info("Create contact.")
     link = base_url + "addContact"
     page = AddNewContactPage(browser=browser, url=link)
@@ -124,7 +151,10 @@ def create_contact_info(browser: webdriver.Firefox, setup_user):
 
 @pytest.fixture(scope="function")
 def created_contact(
-    browser: webdriver.Firefox, setup_user, create_contact_info, pytestconfig
+    browser: webdriver.Firefox | webdriver.Chrome,
+    setup_user,
+    create_contact_info,
+    pytestconfig,
 ):
     logger.info(
         f"Creating contact wit\n"

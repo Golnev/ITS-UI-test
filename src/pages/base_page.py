@@ -5,7 +5,9 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 
 class BasePage:
-    def __init__(self, browser: webdriver.Firefox, url: str, timeout: int = 5):
+    def __init__(
+        self, browser: webdriver.Firefox | webdriver.Chrome, url: str, timeout: int = 5
+    ):
         self.browser = browser
         self.url = url
         self.browser.implicitly_wait(timeout)

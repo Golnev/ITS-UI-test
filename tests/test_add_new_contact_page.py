@@ -41,6 +41,7 @@ class TestAddNewContactPage:
             page.browser.current_url == base_url
         ), f"Wrong URL after logout. URL: {page.browser.current_url}"
 
+    @pytest.mark.check
     def test_cancel_from_add_new_contact_page(
         self, browser: webdriver.Firefox | webdriver.Chrome, setup_user
     ):
@@ -51,6 +52,8 @@ class TestAddNewContactPage:
         page.open()
 
         page.cancel_from_add_new_contact_page()
+
+        WebDriverWait(browser, 5).until(EC.url_changes(link))
 
         contact_list_page = ContactListPage(browser=browser, url=browser.current_url)
         contact_list_page.should_be_contact_list_page()

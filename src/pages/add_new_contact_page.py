@@ -1,5 +1,8 @@
 import logging as logger
 
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+
 from src.locators import AddNewContactPageLocators
 from src.pages.base_page import BasePage
 
@@ -35,9 +38,14 @@ class AddNewContactPage(BasePage):
     def cancel_from_add_new_contact_page(self):
         logger.info("Cancel from add new contact page")
 
+        WebDriverWait(self.browser, 10).until(
+            EC.visibility_of_element_located(AddNewContactPageLocators.CANCEL_BUTTON)
+        )
+
         cancel_button = self.browser.find_element(
             *AddNewContactPageLocators.CANCEL_BUTTON
         )
+
         cancel_button.click()
 
     def add_new_contact(

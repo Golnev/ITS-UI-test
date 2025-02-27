@@ -67,6 +67,8 @@ def browser(pytestconfig):
 
         service = Service(executable_path=chromedriver_path)
         browser = webdriver.Firefox(service=service, options=options)
+    else:
+        raise pytest.UsageError("--browser_name should be chrome or firefox")
 
     yield browser
 
@@ -111,7 +113,8 @@ def setup_user(browser: webdriver.Firefox | webdriver.Chrome):
     email = os.getenv("MY_EMAIL")
     password = os.getenv("MY_PASSWORD")
 
-    page.login(email=email, password=password)
+    if email and password:
+        page.login(email=email, password=password)
 
 
 @pytest.fixture(scope="function")

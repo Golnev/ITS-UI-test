@@ -37,7 +37,8 @@ class TestLoginPage:
         email = os.getenv("MY_EMAIL")
         password = os.getenv("MY_PASSWORD")
 
-        page.login(email=email, password=password)
+        if email and password:
+            page.login(email=email, password=password)
 
         WebDriverWait(browser, 10).until(EC.url_to_be(base_url + "contactList"))
 

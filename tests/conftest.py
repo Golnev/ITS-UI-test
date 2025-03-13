@@ -52,10 +52,11 @@ def browser(pytestconfig):
         from selenium.webdriver.firefox.service import Service
 
         options = Options()
-        options.binary_location = firefox_path
+        if firefox_path and geckodriver_path:
+            options.binary_location = firefox_path
 
-        service = Service(executable_path=geckodriver_path)
-        browser = webdriver.Firefox(service=service, options=options)
+            service = Service(executable_path=geckodriver_path)
+            browser = webdriver.Firefox(service=service, options=options)
     elif browser_name == "chrome":
         logger.info("Prepare browser chrome.")
 
@@ -63,17 +64,19 @@ def browser(pytestconfig):
         from selenium.webdriver.chrome.service import Service
 
         options = Options()
-        options.binary_location = google_chrome_path
+        if google_chrome_path and chromedriver_path:
+            options.binary_location = google_chrome_path
 
-        service = Service(executable_path=chromedriver_path)
-        browser = webdriver.Firefox(service=service, options=options)
+            service = Service(executable_path=chromedriver_path)
+            browser = webdriver.Chrome(service=service, options=options)
     else:
         raise pytest.UsageError("--browser_name should be chrome or firefox")
 
     yield browser
 
     logger.info("Browser quit.")
-    browser.quit()
+    if browser:
+        browser.quit()
 
 
 @pytest.fixture(autouse=True)
